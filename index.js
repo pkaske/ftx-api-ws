@@ -68,14 +68,14 @@ class Connection extends EventEmitter {
     });
   }
 
-  terminate = async() => {
+  async terminate() {
     console.log(new Date, '[FTX] TERMINATED WS CON');
     this.ws.terminate();
     this.authenticated = false;
     this.connected = false;
   }
 
-  reconnect = async () => {
+  async reconnect() {
     this.reconnecting = true;
     this.pingAt = false;
     this.pongAt = false;
@@ -94,7 +94,7 @@ class Connection extends EventEmitter {
     });
   }
 
-  connect = async () => {
+  async connect() {
     await this._connect();
     if(this.key) {
       this.authenticate();
@@ -103,7 +103,7 @@ class Connection extends EventEmitter {
 
   // not a proper op, but forces a response so
   // we know the connection isn't stale
-  ping = () => {
+  ping() {
     if(this.pingAt && this.pongAt > this.pingAt && this.pongAt - this.pingAt > STALE_TIMEOUT) {
       console.error(new Date, '[FTX] did NOT receive pong in time, reconnecting', {
         pingAt: this.pingAt,
@@ -119,7 +119,7 @@ class Connection extends EventEmitter {
   // note: when this method returns
   // we do not know what auth status is
   // since FTX doesn't ACK
-  authenticate = async () => {
+  async authenticate() {
     if(!this.connected) {
       await this.connect();
     }
@@ -143,7 +143,7 @@ class Connection extends EventEmitter {
     this.authenticated = true;
   }
 
-  handleWSMessage = e => {
+  handleWSMessage(e) {
     this.lastMessageAt = +new Date;
     let payload;
 
@@ -184,7 +184,7 @@ class Connection extends EventEmitter {
     return market + '::' + channel;
   }
 
-  sendMessage = async (payload) => {
+  async sendMessage(payload) {
     if(!this.connected) {
       if(!this.reconnecting) {
         throw new Error('Not connected.')
@@ -196,7 +196,7 @@ class Connection extends EventEmitter {
     this.ws.send(JSON.stringify(payload));
   }
 
-  subscribe = async (channel, market = undefined) => {
+  async subscribe(channel, market = undefined) {
 
     const id = this.toId(market, channel);
 
