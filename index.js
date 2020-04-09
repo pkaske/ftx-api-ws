@@ -41,7 +41,7 @@ class Connection extends EventEmitter {
 
     return new Promise((resolve, reject) => {
       this.ws = new WebSocket(`wss://${this.WSendpoint}`);
-      this.ws.onmessage = this.handleWSMessage;
+      this.ws.onmessage = this.handleWSMessage.bind(this);
 
       this.ws.onopen = () => {
         this.connected = true;
@@ -64,7 +64,7 @@ class Connection extends EventEmitter {
         this.reconnect();
       }
 
-      this.heartbeat = setInterval(this.ping, 5 * 1000);
+      this.heartbeat = setInterval(this.ping.bind(this), 5 * 1000);
     });
   }
 
